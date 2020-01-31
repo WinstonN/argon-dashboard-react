@@ -1,0 +1,10 @@
+{
+	"auth": {
+		"reactmobxamplify7e350b08": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [],
+			"customAuth": false
+		}
+	}
+}
