@@ -14,6 +14,16 @@ npm start
 At this stage you can view your theme at http://localhost:3000/
 
 ### amplify
+```
+# Uncaught (in promise) Error: No credentials, applicationId or region
+#    at AWSPinpointProvider.<anonymous> (AWSPinpointProvider.js:349)
+#    at step (AWSPinpointProvider.js:137)
+#    at Object.next (AWSPinpointProvider.js:67)
+#    at fulfilled (AWSPinpointProvider.js:19)
+
+npm install aws-amplify aws-amplify-react
+```
+
 Create IAM user with policy https://aws-amplify.github.io/docs/cli-toolchain/usage#iam-policy-for-the-cli  
 amplify configure  
 ```

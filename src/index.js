@@ -26,6 +26,13 @@ import "assets/scss/argon-dashboard-react.scss";
 import AdminLayout from "layouts/Admin.jsx";
 import AuthLayout from "layouts/Auth.jsx";
 
+// amplify
+import Amplify from "aws-amplify";
+import config from "aws-exports";
+
+// setup amplify with config
+Amplify.configure(config);
+
 ReactDOM.render(
   <BrowserRouter>
     <Switch>

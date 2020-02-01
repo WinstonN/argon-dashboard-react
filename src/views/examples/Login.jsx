@@ -25,6 +25,7 @@ import {
   CardBody,
   FormGroup,
   Form,
+  FormFeedback,
   Input,
   InputGroupAddon,
   InputGroupText,
@@ -33,7 +34,82 @@ import {
   Col
 } from "reactstrap";
 
+// auth helper
+import Auth from "../../helpers/Auth";
+
 class Login extends React.Component {
+  // constructor
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      email: '',
+      password: '',
+      validation: {
+        error: {
+          email: '',
+          password: ''
+        }
+      },
+      authenticated: false
+    }
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  // handle change
+  handleChange(event) {
+    //eslint-disable-next-line
+    const validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+    let error = this.state.validation.error;
+
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    switch (name) {
+      case 'email': 
+        error.email = 
+        validEmailRegex.test(value)
+          ? ''
+          : 'Email is not valid';
+        break;
+      case 'password': 
+        error.password = 
+          value.length < 8
+            ? 'Password must be 8 characters long!'
+            : '';
+        break;
+      default:
+        break;
+    }
+    
+    this.setState({
+      validation: {
+        error: error
+      },
+      [name]: value
+    });
+  }
+  // handle submit
+  handleSubmit(event) {
+    const validateForm = (error) => {
+      let valid = true;
+      Object.values(error).forEach(
+        (val) => val.length > 0 && (valid = false)
+      );
+      return valid;
+    }
+
+    var username = this.state.email;
+    var password = this.state.password;
+    var error = this.state.validation.error;
+
+    if(validateForm(error)) {
+      Auth.signIn(username,password);
+    }
+  }
+
   render() {
     return (
       <>
@@ -79,41 +155,118 @@ class Login extends React.Component {
                 <small>Or sign in with credentials</small>
               </div>
               <Form role="form">
-                <FormGroup className="mb-3">
+                <FormGroup 
+                    className={
+                      ( // has input, and error on validation
+                        this.state.validation.error.email.length > 0 &&
+                        this.state.email.length > 0
+                      ) ? 
+                      ('has-danger mb-3') : 
+                      ( // has input, and successful on validation
+                        this.state.validation.error.email.length === 0 &&
+                        this.state.email.length > 0
+                      ) ?
+                      ('has-success mb-3') : 
+                      // empty
+                      "mb-3"
+                    }
+                  >
                   <InputGroup className="input-group-alternative">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="ni ni-email-83" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Email" type="email" />
+                    <Input 
+                      placeholder="Email" 
+                      type="email" 
+                      name="email"
+                      value={this.state.email}
+                      onChange={this.handleChange}
+                      className={
+                        (
+                          this.state.validation.error.email.length > 0 &&
+                          this.state.email.length > 0
+                        ) ?
+                        ('is-invalid') : ('is-valid')
+                      }
+                    />
+                    {this.state.validation.error.email.length > 0 &&
+                    <FormFeedback 
+                      className="p-1"
+                    >
+                    {this.state.validation.error.email}
+                    </FormFeedback>
+                    }
                   </InputGroup>
                 </FormGroup>
-                <FormGroup>
+                <FormGroup 
+                  className=
+                  {
+                    ( // has input, and error on validation
+                      this.state.validation.error.password.length > 0 &&
+                      this.state.password.length > 0
+                    ) ? 
+                    ('has-danger mb-3') : 
+                    ( // has input, and successful on validation
+                      this.state.validation.error.password.length === 0 &&
+                      this.state.password.length > 0
+                    ) ?
+                    ('has-success mb-3') : 
+                    // empty
+                    "mb-3"
+                  }
+                >
                   <InputGroup className="input-group-alternative">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText>
                         <i className="ni ni-lock-circle-open" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Password" type="password" />
+                    <Input 
+                      name="password"
+                      placeholder="Password" 
+                      type="password"
+                      value={this.state.password}
+                      onChange={this.handleChange}
+                      className={
+                        this.state.validation.error.password.length  > 0 ? 
+                        ('is-invalid') : ('is-valid')
+                      }
+                    />
+                    {this.state.validation.error.password.length > 0 &&
+                    <FormFeedback 
+                      className="p-1"
+                    >
+                    {this.state.validation.error.password}
+                    </FormFeedback>
+                    }
                   </InputGroup>
                 </FormGroup>
-                <div className="custom-control custom-control-alternative custom-checkbox">
-                  <input
-                    className="custom-control-input"
-                    id=" customCheckLogin"
-                    type="checkbox"
-                  />
-                  <label
-                    className="custom-control-label"
-                    htmlFor=" customCheckLogin"
-                  >
-                    <span className="text-muted">Remember me</span>
-                  </label>
-                </div>
+                <Row className="my-3">
+                  <Col xs="12">
+                    <div className="custom-control custom-control-alternative custom-checkbox">
+                      <input
+                        className="custom-control-input"
+                        id="customCheckLogin"
+                        type="checkbox"
+                      />
+                      <label
+                        className="custom-control-label"
+                        htmlFor="customCheckLogin"
+                      >
+                        <span className="text-muted">Remember me</span>
+                      </label>
+                    </div>
+                    </Col>
+                </Row>
                 <div className="text-center">
-                  <Button className="my-4" color="primary" type="button">
+                  <Button 
+                    className="my-4" 
+                    color="primary" 
+                    type="button"
+                    onClick={() => this.handleSubmit()}
+                  >
                     Sign in
                   </Button>
                 </div>
