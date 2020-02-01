@@ -9,7 +9,7 @@ class Auth_1 {
     }).then(response => {
       let user = {username:response.username,...response.attributes}
       console.log('--- user ---',user);
-      if(user.email_verified && user.username) {
+      if(user.username) {
         let data = {
           user: user,
           authenticated: true

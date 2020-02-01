@@ -23,10 +23,18 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.jsx";
 import AdminFooter from "components/Footers/AdminFooter.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
+import Redirect from "react-router-dom/Redirect";
 
 import routes from "routes.js";
 
+// auth
+import Auth from "../helpers/Auth";
+
 class Admin extends React.Component {
+  componentDidMount() {
+    let authState = Auth.checkAuthState();
+    console.log(authState)
+  }
   componentDidUpdate(e) {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -47,6 +55,39 @@ class Admin extends React.Component {
       }
     });
   };
+  // getRoutes = routes => {
+  //   return routes.map((prop, key) => {
+  //     // if authenticated in state is false, which it should not be, return null
+  //     if (this.props.store.state.get('auth').authenticated === false) {
+  //       return (
+  //         <Redirect 
+  //           from="" 
+  //           to="/auth/login"
+  //           key={key}
+  //          />
+  //       );
+  //     }
+  //     // load the app, or if route not found redirect to login
+  //     if (prop.layout === "/admin" 
+  //     ) {
+  //       return (
+  //         <Route
+  //           path={prop.layout + prop.path}
+  //           component={prop.component}
+  //           key={key}
+  //         />
+  //       );
+  //     } else {
+  //       return (
+  //         <Redirect 
+  //           from="" 
+  //           to="/auth/login"
+  //           key={key}
+  //          />
+  //       );
+  //     }
+  //   });
+  // };
   getBrandText = path => {
     for (let i = 0; i < routes.length; i++) {
       if (

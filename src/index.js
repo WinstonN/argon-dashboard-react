@@ -33,12 +33,20 @@ import config from "aws-exports";
 // setup amplify with config
 Amplify.configure(config);
 
+const NoMatch = ({ location }) => (
+  <div>
+    <h3>No match for <code>{location.pathname}</code></h3>
+  </div>
+)
+
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
       <Route path="/admin" render={props => <AdminLayout {...props} />} />
       <Route path="/auth" render={props => <AuthLayout {...props} />} />
-      <Redirect from="/" to="/admin/index" />
+      {/* <Redirect from="/" to="/admin/index" /> */}
+      <Redirect from="/" to="/auth/login" />
+      <Route component={NoMatch} />
     </Switch>
   </BrowserRouter>,
   document.getElementById("root")
