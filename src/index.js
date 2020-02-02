@@ -26,6 +26,12 @@ import "assets/scss/argon-dashboard-react.scss";
 import AdminLayout from "layouts/Admin.jsx";
 import AuthLayout from "layouts/Auth.jsx";
 
+// MobX for state 
+import { Provider } from 'mobx-react';
+
+// helpers
+import Store from "./helpers/Store";
+
 // amplify
 import Amplify from "aws-amplify";
 import config from "aws-exports";
@@ -40,14 +46,16 @@ const NoMatch = ({ location }) => (
 )
 
 ReactDOM.render(
-  <BrowserRouter>
-    <Switch>
-      <Route path="/admin" render={props => <AdminLayout {...props} />} />
-      <Route path="/auth" render={props => <AuthLayout {...props} />} />
-      {/* <Redirect from="/" to="/admin/index" /> */}
-      <Redirect from="/" to="/auth/login" />
-      <Route component={NoMatch} />
-    </Switch>
-  </BrowserRouter>,
+  <Provider store={Store}>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/admin" render={props => <AdminLayout {...props} />} />
+        <Route path="/auth" render={props => <AuthLayout {...props} />} />
+        {/* <Redirect from="/" to="/admin/index" /> */}
+        <Redirect from="/" to="/auth/login" />
+        <Route component={NoMatch} />
+      </Switch>
+    </BrowserRouter>
+  </Provider>,
   document.getElementById("root")
 );

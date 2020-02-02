@@ -17,6 +17,13 @@
 */
 import React from "react";
 import { Link } from "react-router-dom";
+
+// MobX for state management
+import {inject, observer} from 'mobx-react';
+
+// smashem helpers
+import Auth from "../../helpers/Auth";
+
 // reactstrap components
 import {
   DropdownMenu,
@@ -97,7 +104,7 @@ class AdminNavbar extends React.Component {
                     <span>Support</span>
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href="#pablo" onClick={e => e.preventDefault()}>
+                  <DropdownItem href="#pablo" onClick={e => Auth.signOut()}>
                     <i className="ni ni-user-run" />
                     <span>Logout</span>
                   </DropdownItem>
@@ -111,4 +118,4 @@ class AdminNavbar extends React.Component {
   }
 }
 
-export default AdminNavbar;
+export default inject('store')(observer(AdminNavbar));

@@ -30,46 +30,21 @@ import routes from "routes.js";
 // auth
 import Auth from "../helpers/Auth";
 
+// MobX for state management
+import {inject, observer} from 'mobx-react';
+
 class Admin extends React.Component {
   componentDidMount() {
-    let authState = Auth.checkAuthState();
-    console.log(authState)
+    Auth.checkAuthState();
   }
   componentDidUpdate(e) {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     this.refs.mainContent.scrollTop = 0;
   }
-  getRoutes = routes => {
-    return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
-        return (
-          <Route
-            path={prop.layout + prop.path}
-            component={prop.component}
-            key={key}
-          />
-        );
-      } else {
-        return null;
-      }
-    });
-  };
   // getRoutes = routes => {
   //   return routes.map((prop, key) => {
-  //     // if authenticated in state is false, which it should not be, return null
-  //     if (this.props.store.state.get('auth').authenticated === false) {
-  //       return (
-  //         <Redirect 
-  //           from="" 
-  //           to="/auth/login"
-  //           key={key}
-  //          />
-  //       );
-  //     }
-  //     // load the app, or if route not found redirect to login
-  //     if (prop.layout === "/admin" 
-  //     ) {
+  //     if (prop.layout === "/admin") {
   //       return (
   //         <Route
   //           path={prop.layout + prop.path}
@@ -78,16 +53,43 @@ class Admin extends React.Component {
   //         />
   //       );
   //     } else {
-  //       return (
-  //         <Redirect 
-  //           from="" 
-  //           to="/auth/login"
-  //           key={key}
-  //          />
-  //       );
+  //       return null;
   //     }
   //   });
   // };
+  getRoutes = routes => {
+    return routes.map((prop, key) => {
+      // if authenticated in state is false, which it should not be, return to login
+      if (this.props.store.state.get('auth').authenticated === false) {
+        return (
+          <Redirect 
+            from="" 
+            to="/auth/login"
+            key={key}
+           />
+        );
+      }
+      // load the app, or if route not found redirect to login
+      if (prop.layout === "/admin" 
+      ) {
+        return (
+          <Route
+            path={prop.layout + prop.path}
+            component={prop.component}
+            key={key}
+          />
+        );
+      } else {
+        return (
+          <Redirect 
+            from="" 
+            to="/auth/login"
+            key={key}
+           />
+        );
+      }
+    });
+  };
   getBrandText = path => {
     for (let i = 0; i < routes.length; i++) {
       if (
@@ -127,4 +129,4 @@ class Admin extends React.Component {
   }
 }
 
-export default Admin;
+export default inject('store')(observer(Admin));

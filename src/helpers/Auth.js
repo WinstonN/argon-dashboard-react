@@ -1,6 +1,9 @@
 // amplify
 import AmplifyAuth from '@aws-amplify/auth';
 
+// helpers
+import Store from "./Store";
+
 class Auth_1 {
   // check authentication state of current request
   checkAuthState() {
@@ -15,6 +18,10 @@ class Auth_1 {
           authenticated: true
         }
         console.log('--- success ---',data);
+        // set data to the store using mobx methods
+        console.log('--- set auth data ---');
+        Store.state.set('auth',data);
+        console.log(Store.state.get('auth'));
       }
     }).catch(error => {
       let data = {
@@ -22,6 +29,8 @@ class Auth_1 {
         trace: error
       }
       console.log('--- error ---',data);
+      // set data to the store using mobx methods
+      Store.state.set('auth',data);
     });
   }
 
@@ -32,12 +41,15 @@ class Auth_1 {
       password, // Required, the password
     }).then(response => {
       let user = {username:response.username,...response.attributes}
-      if(user.email_verified && user.username) {
+      console.log('--- user ---',user);
+      if(user.username) {
         let data = {
           user, 
           authenticated: true
         }
         console.log('--- success ---',data);
+        // set data to the store using mobx methods
+        Store.state.set('auth',data);
       }
     }).catch(error => {
       let data = {
@@ -46,6 +58,8 @@ class Auth_1 {
         authenticated: false
       }
       console.log('--- error ---',data);
+      // set data to the store using mobx methods
+      Store.state.set('auth',data);
     });
   }
 
@@ -62,6 +76,8 @@ class Auth_1 {
           authenticated: false
         }
         console.log('--- success ---',data);
+        // set data to the store using mobx methods
+        Store.state.set('auth',data);
     }).catch(error => {
       let data = {
         error: true,
@@ -69,6 +85,8 @@ class Auth_1 {
         authenticated: false
       }
       console.log('--- error ---',data);
+      // set data to the store using mobx methods
+      Store.state.set('auth',data);
     });
   }
 
@@ -82,12 +100,16 @@ class Auth_1 {
         let data = {
           authenticated: false
         }
+        // set data to the store using mobx methods
+        Store.state.set('auth',data);
       })
       .catch(error => {
         let data = {
           error: error,
           authenticated: false
         }
+        // set data to the store using mobx methods
+        Store.state.set('auth',data);
       });
   }
 }

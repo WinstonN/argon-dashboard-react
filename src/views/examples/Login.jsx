@@ -16,9 +16,14 @@
 
 */
 import React from "react";
+import { Redirect } from 'react-router-dom';
+
+// MobX for state management
+import {inject, observer} from 'mobx-react';
 
 // reactstrap components
 import {
+  Alert,
   Button,
   Card,
   CardHeader,
@@ -109,11 +114,35 @@ class Login extends React.Component {
       Auth.signIn(username,password);
     }
   }
-
+  UNSAFE_componentWillMount() {
+    Auth.checkAuthState();
+  }
+  componentDidUpdate() {
+    // checks
+  }
   render() {
     return (
       <>
         <Col lg="5" md="7">
+          { // signed in successfully
+            ( 
+              this.props.store.state.get('auth').authenticated === true
+            ) &&
+            <Redirect 
+            to={{
+              pathname: '/admin/index'
+            }} 
+            />
+          }
+          { // error
+            (
+              this.props.store.state.get('auth').error === true
+              && this.props.store.state.get('auth').trace.code !== undefined
+            ) &&
+            <Alert color="danger">
+              {this.props.store.state.get('auth').trace.message}
+            </Alert>
+          }
           <Card className="bg-secondary shadow border-0">
             <CardHeader className="bg-transparent pb-5">
               <div className="text-muted text-center mt-2 mb-3">
@@ -299,4 +328,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default inject('store')(observer(Login));
