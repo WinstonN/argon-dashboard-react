@@ -3,6 +3,7 @@ import AmplifyAuth from '@aws-amplify/auth';
 
 // helpers
 import Store from "./Store";
+import Storage from "./Storage";
 
 class Auth_1 {
   // check authentication state of current request
@@ -11,6 +12,7 @@ class Auth_1 {
       bypassCache: true
     }).then(response => {
       let user = {username:response.username,...response.attributes}
+      console.log(response);
       console.log('--- user ---',user);
       if(user.username) {
         let data = {
@@ -50,6 +52,15 @@ class Auth_1 {
         console.log('--- success ---',data);
         // set data to the store using mobx methods
         Store.state.set('auth',data);
+
+        /**
+         * Create env
+         */
+        console.log('--- create env ---',data);
+        /**
+         * Check if env exists, if not it will be created
+         */
+        Storage.checkEnv();
       }
     }).catch(error => {
       let data = {
@@ -64,10 +75,12 @@ class Auth_1 {
   }
 
   // signup user
-  signUp(username, password) {
+  signUp(username, password, attributes = []) {
+    console.log(attributes)
     AmplifyAuth.signUp({
       username, // Required, the username
       password, // Required, the password
+      attributes
     }).then(response => {
         let user = response.user;
         let data = {
@@ -78,6 +91,7 @@ class Auth_1 {
         console.log('--- success ---',data);
         // set data to the store using mobx methods
         Store.state.set('auth',data);
+
     }).catch(error => {
       let data = {
         error: true,
@@ -98,6 +112,9 @@ class Auth_1 {
     AmplifyAuth.signOut({ global: true })
       .then(response => {
         let data = {
+          user: {
+            firstname: 'Guest',
+          },
           authenticated: false
         }
         // set data to the store using mobx methods

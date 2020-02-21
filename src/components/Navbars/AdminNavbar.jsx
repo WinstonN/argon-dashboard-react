@@ -44,6 +44,8 @@ import {
 
 class AdminNavbar extends React.Component {
   render() {
+    console.log('src/components/Navbars/AdminNavbar.jsx')
+    console.log(this.props.store.state.auth)
     return (
       <>
         <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -78,7 +80,7 @@ class AdminNavbar extends React.Component {
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                        Jessica Jones
+                      {this.props.store.state.get('auth').user['custom:firstname']}
                       </span>
                     </Media>
                   </Media>

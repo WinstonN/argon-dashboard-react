@@ -17,8 +17,12 @@
 */
 import React from "react";
 
+// MobX for state management
+import {inject, observer} from 'mobx-react';
+
 // reactstrap components
 import {
+  Alert,
   Button,
   Card,
   CardHeader,
@@ -45,10 +49,14 @@ class Register extends React.Component {
     this.state = {
       email: '',
       password: '',
+      firstname: '',
+      lastname: '',
       validation: {
         error: {
           email: '',
-          password: ''
+          password: '',
+          firstname: '',
+          lastname: ''
         }
       }
     };
@@ -79,6 +87,18 @@ class Register extends React.Component {
             ? 'Password must be 8 characters long!'
             : '';
         break;
+      case 'firstname': 
+        error.firstname = 
+          value.length < 1
+            ? 'Firstname is required'
+            : '';
+        break;
+      case 'lastname': 
+        error.lastname = 
+          value.length < 1
+            ? 'Lastname is required'
+            : '';
+        break;
       default:
         break;
     }
@@ -89,6 +109,7 @@ class Register extends React.Component {
       },
       [name]: value
     });
+
   }
   // handle submit
   handleSubmit(event) {
@@ -103,11 +124,26 @@ class Register extends React.Component {
 
     var username = this.state.email;
     var password = this.state.password;
+    var firstname = this.state.firstname;
+    var lastname = this.state.lastname;
+
+    var attributes = {
+      'custom:firstname': firstname,
+      'custom:lastname' :lastname
+    }
+
     var error = this.state.validation.error;
 
+    console.log(username)
+    console.log(password)
+    console.log(attributes)
     if(validateForm(error)) {
       // kick off signup call
-      Auth.signUp(username,password)
+      Auth.signUp(
+        username, 
+        password, 
+        attributes
+      )
     }
   }
 
@@ -119,6 +155,25 @@ class Register extends React.Component {
     return (
       <>
         <Col lg="6" md="8">
+        { // error
+            (
+              this.props.store.state.get('auth').error === true
+              && this.props.store.state.get('auth').trace !== "undefined"
+              && this.props.store.state.get('auth').trace  !== "not authenticated"
+            ) &&
+            <Alert color="danger">
+              {this.props.store.state.get('auth').trace.message}
+            </Alert>
+          }
+          { // success
+            ( 
+              this.props.store.state.get('auth').registered === true
+            ) &&
+            <Alert color="success">
+              Account created successfully. Please click on the link within the verification email,
+              sent to <strong>{this.props.store.state.get('auth').user.username}</strong>
+            </Alert>
+          }
           <Card className="bg-secondary shadow border-0">
             <CardHeader className="bg-transparent pb-5">
               <div className="text-muted text-center mt-2 mb-4">
@@ -160,6 +215,68 @@ class Register extends React.Component {
                 <small>Or sign up with credentials</small>
               </div>
               <Form role="form" onSubmit={this.handleSubmit}>
+                <FormGroup
+                  className={
+                    ( // has input, and error on validation
+                      this.state.validation.error.firstname.length > 0 &&
+                      this.state.firstname.length > 0
+                    ) ? 
+                    ('has-danger mb-3') : 
+                    ( // has input, and successful on validation
+                      this.state.validation.error.firstname.length === 0 &&
+                      this.state.firstname.length > 0
+                    ) ?
+                    ('has-success mb-3') : 
+                    // empty
+                    "mb-3"
+                  }
+                >
+                  <InputGroup className="input-group-alternative">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-circle-08" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input 
+                      type="text"
+                      name="firstname"
+                      value={this.state.firstname}
+                      onChange={this.handleChange}
+                      placeholder='First Name'
+                    />
+                  </InputGroup>
+                </FormGroup>
+                <FormGroup
+                  className={
+                    ( // has input, and error on validation
+                      this.state.validation.error.lastname.length > 0 &&
+                      this.state.lastname.length > 0
+                    ) ? 
+                    ('has-danger mb-3') : 
+                    ( // has input, and successful on validation
+                      this.state.validation.error.lastname.length === 0 &&
+                      this.state.lastname.length > 0
+                    ) ?
+                    ('has-success mb-3') : 
+                    // empty
+                    "mb-3"
+                  }
+                >
+                  <InputGroup className="input-group-alternative">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-circle-08" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input 
+                      type="text"
+                      name="lastname"
+                      value={this.state.lastname}
+                      onChange={this.handleChange}
+                      placeholder='Last Name'
+                    />
+                  </InputGroup>
+                </FormGroup>
                 <FormGroup 
                   className={
                     ( // has input, and error on validation
@@ -268,4 +385,4 @@ class Register extends React.Component {
   }
 }
 
-export default Register;
+export default inject('store')(observer(Register));
